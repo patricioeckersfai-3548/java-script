@@ -51,9 +51,6 @@ function renderVuelos() {
     `;
 
     const boton = div.querySelector(".btnReservar");
-
-    boton.addEventListener("click", () => {
-    
       boton.addEventListener("click", () => {
 
   //  validar que haya nombre
@@ -87,15 +84,6 @@ function renderVuelos() {
   guardarStorage();
 });
 
-reservaActual.vuelos.push(vuelo);
-reservaActual.total += vuelo.precio;
-
-totalReserva = reservaActual.total;
-
-actualizarTotal();
-guardarStorage();
-    });
-
     contenedorVuelos.appendChild(div);
   });
 }
@@ -107,24 +95,27 @@ formPasajero.addEventListener("submit", (e) => {
 
   const nuevoNombre = inputNombre.value.trim();
 
-  //  si cambia el pasajero, reiniciamos la reserva
-  if (nombreGuardado && nuevoNombre !== nombreGuardado) {
-    totalReserva = 0;
-    actualizarTotal();
-  }
+  if (!nuevoNombre) return;
+
+  // detectar si cambió el pasajero
+  const cambioDePasajero = nuevoNombre !== nombreGuardado;
 
   nombreGuardado = nuevoNombre;
 
-  guardarStorage();
-  mostrarSaludo();
-  formPasajero.reset();
-
-const reservaExistente = reservas.find(
+  // buscar reserva del pasajero actual
+  const reservaExistente = reservas.find(
     (r) => r.pasajero === nombreGuardado
   );
 
-  totalReserva = reservaExistente ? reservaExistente.total : 0;
+  if (cambioDePasajero) {
+    // si cambió de persona → mostrar su total o 0
+    totalReserva = reservaExistente ? reservaExistente.total : 0;
+  }
+
   actualizarTotal();
+  guardarStorage();
+  mostrarSaludo();
+  formPasajero.reset();
 });
 
 finalizarBtn.addEventListener("click", () => {
