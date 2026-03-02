@@ -1,0 +1,10 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+.vuelo {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 8px 0;
+}
