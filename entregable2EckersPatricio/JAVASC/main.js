@@ -19,8 +19,14 @@ const inputNombre = document.getElementById("nombrePasajero");
 const saludo = document.getElementById("saludo");
 const finalizarBtn = document.getElementById("finalizarBtn");
 const resetBtn = document.getElementById("resetBtn");
+const cantidadVuelos = document.getElementById("cantidadVuelos");
 
 // ====== FUNCIONES ======
+
+function validarNombre(nombre) {
+  const regex = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]{2,}$/;
+  return regex.test(nombre);
+}
 
 function guardarStorage() {
   localStorage.setItem("reservas", JSON.stringify(reservas));
@@ -51,15 +57,13 @@ function renderVuelos() {
     `;
 
     const boton = div.querySelector(".btnReservar");
-      boton.addEventListener("click", () => {
+    boton.addEventListener("click", () => {
 
-  //  validar que haya nombre
   if (!nombreGuardado) {
     alert("Primero ingresá tu nombre para reservar.");
     return;
   }
 
-  // buscar o crear reserva del pasajero
   let reservaActual = reservas.find(
     (r) => r.pasajero === nombreGuardado
   );
@@ -73,19 +77,81 @@ function renderVuelos() {
     reservas.push(reservaActual);
   }
 
-  // agregar vuelo
+  const yaReservado = reservaActual.vuelos.some(
+  (v) => v.destino === vuelo.destino
+);
 
-  reservaActual.vuelos.push(vuelo);
-  reservaActual.total += vuelo.precio;
+if (yaReservado) {
+  alert("Este vuelo ya está reservado.");
+  return;
+}
+
+reservaActual.vuelos.push(vuelo);
+reservaActual.total += vuelo.precio;
 
   totalReserva = reservaActual.total;
 
   actualizarTotal();
+  actualizarCantidad();
   guardarStorage();
+  renderCarrito();
 });
 
     contenedorVuelos.appendChild(div);
   });
+}
+
+function renderCarrito() {
+  const carrito = document.getElementById("carrito");
+  carrito.innerHTML = "";
+
+  const reservaActual = reservas.find(
+    r => r.pasajero === nombreGuardado
+  );
+
+  if (!reservaActual) return;
+
+  reservaActual.vuelos.forEach((vuelo, index) => {
+
+    const div = document.createElement("div");
+
+    div.innerHTML = `
+      ${vuelo.destino} - $${vuelo.precio}
+      <button data-index="${index}">Eliminar</button>
+    `;
+
+    const botonEliminar = div.querySelector("button");
+
+    botonEliminar.addEventListener("click", () => {
+
+      reservaActual.total -= vuelo.precio;
+      reservaActual.vuelos.splice(index, 1);
+
+      totalReserva = reservaActual.total;
+
+      guardarStorage();
+      actualizarTotal();
+      actualizarCantidad();
+      renderCarrito();
+    });
+
+    carrito.appendChild(div);
+  });
+}
+
+function actualizarCantidad() {
+
+  const reservaActual = reservas.find(
+    (r) => r.pasajero === nombreGuardado
+  );
+
+  if (!reservaActual) {
+    cantidadVuelos.textContent = "";
+    return;
+  }
+
+  cantidadVuelos.textContent =
+    "Vuelos reservados: " + reservaActual.vuelos.length;
 }
 
 // ====== EVENTOS ======
@@ -95,38 +161,68 @@ formPasajero.addEventListener("submit", (e) => {
 
   const nuevoNombre = inputNombre.value.trim();
 
-  if (!nuevoNombre) return;
+  if (!validarNombre(nuevoNombre)) {
+    alert("Ingrese un nombre válido (solo letras).");
+    return;
+  }
 
-  // detectar si cambió el pasajero
   const cambioDePasajero = nuevoNombre !== nombreGuardado;
 
   nombreGuardado = nuevoNombre;
 
-  // buscar reserva del pasajero actual
   const reservaExistente = reservas.find(
     (r) => r.pasajero === nombreGuardado
   );
 
   if (cambioDePasajero) {
-    // si cambió de persona → mostrar su total o 0
     totalReserva = reservaExistente ? reservaExistente.total : 0;
   }
 
   actualizarTotal();
+  actualizarCantidad();
   guardarStorage();
   mostrarSaludo();
   formPasajero.reset();
 });
 
 finalizarBtn.addEventListener("click", () => {
-  alert(
-    "Reserva confirmada.\nTotal a pagar: $" +
-      totalReserva +
-      "\nGracias por elegir Aeroteck."
+
+  if (totalReserva === 0) {
+    alert("No hay vuelos reservados.");
+    return;
+  }
+
+  const reservaActual = reservas.find(
+    r => r.pasajero === nombreGuardado
   );
+
+  let listaVuelos = "";
+
+  reservaActual.vuelos.forEach(vuelo => {
+    listaVuelos += "- " + vuelo.destino + " ($" + vuelo.precio + ")\n";
+  });
+
+  alert(
+    "Reserva confirmada para " + nombreGuardado +
+    "\n\nVuelos reservados:\n" +
+    listaVuelos +
+    "\nTotal a pagar: $" + totalReserva +
+    "\n\nGracias por elegir Aeroteck."
+  );
+
+  reservaActual.vuelos = [];
+  reservaActual.total = 0;
+
+  totalReserva = 0;
+
+  guardarStorage();
+  actualizarCantidad();
+  actualizarTotal();
+  renderCarrito();
 });
 
-resetBtn.addEventListener("click", () => {
+  resetBtn.addEventListener("click", () => {
+
   totalReserva = 0;
   nombreGuardado = "";
   reservas = [];
@@ -136,9 +232,14 @@ resetBtn.addEventListener("click", () => {
 
   actualizarTotal();
   saludo.textContent = "";
+
+  renderCarrito();   // limpia el carrito visual
+  renderVuelos();    // vuelve a mostrar los vuelos
 });
 // ====== INICIO ======
 
 actualizarTotal();
+actualizarCantidad();
 mostrarSaludo();
 renderVuelos();
+renderCarrito();
