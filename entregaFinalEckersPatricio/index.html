@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Aeroteck</title>
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+    <h1>Aeroteck - Reserva de Vuelos</h1>
+
+    <!-- formulario pasajero -->
+    <form id="formPasajero">
+    <input type="text" id="nombrePasajero" placeholder="Ingrese su nombre" required>
+    <button type="submit">Comenzar reserva</button>
+    </form>
+
+    <h2 id="saludo"></h2>
+    <div id="resumen"></div>
+    
+    <input type="text" id="buscador" placeholder="Buscar destino..." />
+    <h3>Vuelos disponibles</h3>
+    <div id="contenedorVuelos"></div>
+
+    <h3>Total: $<span id="total">0</span></h3>
+    <p id="cantidadVuelos"></p>
+    
+    <h3>Vuelos reservados</h3>
+    <div id="carrito"></div>
+
+    <button id="finalizarBtn">Finalizar reserva</button>
+    <button id="resetBtn">Reiniciar reserva</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="./JAVASC/main.js"></script>
+</body>
+</html>
+
+
+

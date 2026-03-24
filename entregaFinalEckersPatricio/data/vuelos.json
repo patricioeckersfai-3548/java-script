@@ -1,0 +1,9 @@
+[
+    { "destino": "Buenos Aires", "precio": 45000 },
+    { "destino": "Córdoba", "precio": 38000 },
+    { "destino": "Mendoza", "precio": 42000 },
+    { "destino": "Bariloche", "precio": 52000 },
+    { "destino": "San Luis", "precio": 25000 },
+    { "destino": "Neuquen", "precio": 18000 },
+    { "destino": "Túcuman", "precio": 41000 }
+]
