@@ -25,7 +25,7 @@ function cargarVuelos() {
     vuelos = data;
     renderVuelos();
     })
-    .catch(error => console.log(error));
+    .catch(() => {});
 }
 
 function validarNombre(nombre) {
@@ -55,6 +55,11 @@ function renderVuelos(filtro = "") {
     const vuelosFiltrados = vuelos.filter(v =>
     v.destino.toLowerCase().includes(filtro.toLowerCase())
     );
+        if (vuelosFiltrados.length === 0) {
+        contenedorVuelos.innerHTML = `<p style="color: red; font-weight: bold;">
+            No se encontraron vuelos para "${filtro}".
+        </p>`;
+        }
 
     vuelosFiltrados.forEach((vuelo) => {
     const div = document.createElement("div");
@@ -237,6 +242,7 @@ formPasajero.addEventListener("submit", (e) => {
     renderResumen();
     guardarStorage();
     mostrarSaludo();
+    renderCarrito();
     formPasajero.reset();
 });
 
@@ -402,11 +408,11 @@ formPasajero.addEventListener("submit", (e) => {
             text: "Tu reserva en Aeroteck ha sido procesada con éxito.",
             icon: "success",
             confirmButtonColor: "#28a745"
+                });
+            }
         });
-        }
+        });
     });
-    });
-});
 });
 
 resetBtn.addEventListener("click", () => {

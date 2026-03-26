@@ -8,8 +8,19 @@ body {
     padding: 10px;
     margin: 8px 0;
 }
-#carrito p {
-  color: #777;
-  font-style: italic;
-  text-align: center;
+#carrito div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+
+button {
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
 }
